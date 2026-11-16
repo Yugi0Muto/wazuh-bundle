@@ -1,0 +1,15 @@
+# --- SECRETS ET CONFIGURATION LOCALE : ne jamais publier ---
+bundle.conf
+*.env
+secrets.env
+wazuh-passwords.txt
+wazuh-install-files.tar
+*.pem
+*.key
+sasl_passwd*
+# --- divers ---
+__pycache__/
+*.pyc
+*.bak.*
+*.log
+.DS_Store

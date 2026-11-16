@@ -1,0 +1,61 @@
+# ============================================================
+# bundle.conf — configuration du bundle (copier en bundle.conf)
+#   cp bundle.conf.example bundle.conf && chmod 600 bundle.conf
+# Toutes les valeurs marquées A_COMPLETER sont OBLIGATOIRES.
+# Listes = valeurs séparées par des espaces, entre guillemets.
+# ============================================================
+
+# --- Wazuh --------------------------------------------------
+WAZUH_BRANCH="4.14"          # branche installée sur le manager
+WAZUH_VERSION=""             # rempli automatiquement par l'étape 01 (ex: 4.14.1-1)
+
+# --- Serveur Wazuh (segment SERVEURS) ----------------------
+MANAGER_IP="A_COMPLETER"     # IP FIXE du serveur Wazuh
+MANAGER_HOSTNAME="wazuh-siem"
+
+# --- Plan réseau (CIDR) -------------------------------------
+SERVERS_CIDR="A_COMPLETER"     # ex: 10.10.10.0/24
+EMPLOYEES_CIDR="A_COMPLETER"   # ex: 10.10.20.0/24 (plusieurs: séparer par espace)
+DMZ_CIDR="A_COMPLETER"         # ex: 10.10.30.0/24
+# Postes autorisés à administrer (SSH, Dashboard 443, Grafana 3000)
+ADMIN_CIDRS="A_COMPLETER"      # ex: 10.10.10.50/32 10.10.10.51/32
+
+# IP jamais bloquées par l'Active Response (passerelles, DNS, admin, scanners...)
+# Le manager et ADMIN_CIDRS sont ajoutés automatiquement.
+WHITELIST_EXTRA=""
+
+# --- SSH du serveur Wazuh -----------------------------------
+SSH_HARDEN="true"              # PermitRootLogin no, MaxAuthTries 4 (si un compte sudo existe)
+SSH_DISABLE_PASSWORD="false"   # true = clés SSH uniquement (vérifie authorized_keys avant)
+
+# --- Rétention des alertes (indexer) ------------------------
+RETENTION_DAYS="90"
+
+# --- Détection malware --------------------------------------
+YARA_SCAN_PATHS_REGEX="^/(var/www|tmp|var/tmp|dev/shm|home)/"
+MALWARE_HASH_URL="https://bazaar.abuse.ch/export/txt/sha256/recent/"
+ABUSECH_AUTH_KEY=""            # clé abuse.ch si le service l'exige
+
+# --- Alertes email (relais SMTP de l'entreprise) ------------
+EMAIL_ENABLE="false"
+SMTP_RELAY="smtp.entreprise.local:25"
+SMTP_USER=""                   # vide = relais sans authentification
+EMAIL_FROM="wazuh@entreprise.local"
+EMAIL_TO="soc@entreprise.local"
+EMAIL_ALERT_LEVEL="10"
+
+# --- Alertes SMS (Africa's Talking) -------------------------
+SMS_ENABLE="false"
+SMS_USERNAME="sandbox"         # "sandbox" = aucun SMS réellement livré
+SMS_TO="+241XXXXXXXX"          # plusieurs: séparer par espace
+SMS_ALERT_LEVEL="12"
+SMS_MAX_PER_HOUR="20"
+SMS_DEDUP_SECONDS="300"
+
+# --- Grafana -------------------------------------------------
+GRAFANA_ENABLE="true"
+OPENSEARCH_DS_VERSION="2.19.0"   # voir docs: version OpenSearch réelle de l'indexer
+
+# --- Sauvegardes --------------------------------------------------
+BACKUP_DIR="/var/backups/wazuh"
+BACKUP_KEEP_DAYS="14"

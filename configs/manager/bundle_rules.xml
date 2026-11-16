@@ -1,0 +1,67 @@
+<!-- Règles du wazuh-bundle — identifiants 100500 à 100599 -->
+<group name="local,bundle,">
+
+  <!-- 1) Hash SHA256 connu comme malveillant (liste etc/lists/malware-sha256).
+        DOIT rester AVANT les règles 100501/100502 (ordre d'évaluation). -->
+  <rule id="100500" level="14">
+    <if_sid>550,554</if_sid>
+    <list field="syscheck.sha256_after" lookup="match_key">etc/lists/malware-sha256</list>
+    <description>Fichier au hash SHA256 connu comme malveillant : $(file)</description>
+    <group>syscheck,malware,attack,</group>
+  </rule>
+
+  <!-- 2) Déclencheurs du scan YARA (ajout / modification dans les répertoires surveillés) -->
+  <rule id="100501" level="3">
+    <if_sid>554</if_sid>
+    <field name="file" type="pcre2">__YARA_REGEX__</field>
+    <description>Fichier ajouté dans un répertoire analysé par YARA : $(file)</description>
+    <group>syscheck,yara_scan,</group>
+  </rule>
+
+  <rule id="100502" level="3">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">__YARA_REGEX__</field>
+    <description>Fichier modifié dans un répertoire analysé par YARA : $(file)</description>
+    <group>syscheck,yara_scan,</group>
+  </rule>
+
+  <!-- 3) Résultats YARA -->
+  <rule id="100510" level="0">
+    <decoded_as>yara_bundle</decoded_as>
+    <description>YARA : événement du scanner</description>
+  </rule>
+
+  <rule id="100511" level="12">
+    <if_sid>100510</if_sid>
+    <match>wazuh-yara: INFO - Scan result: </match>
+    <description>Malware détecté (YARA) : $(yara_scanned_file) — règle $(yara_rule)</description>
+    <group>yara,malware,attack,</group>
+  </rule>
+
+  <rule id="100512" level="8">
+    <if_sid>100510</if_sid>
+    <match>wazuh-yara: ERROR</match>
+    <description>YARA : erreur du scanner sur l'agent (voir active-responses.log)</description>
+    <group>yara,</group>
+  </rule>
+
+  <!-- 4) Windows Defender (postes employés) : menace détectée / action prise.
+        À VALIDER lors de la recette avec le fichier de test EICAR. -->
+  <rule id="100540" level="12">
+    <if_group>windows</if_group>
+    <field name="win.system.providerName">Windows Defender</field>
+    <field name="win.system.eventID" type="pcre2">^(1116|1117)$</field>
+    <description>Windows Defender : menace détectée ou traitée</description>
+    <group>malware,defender,attack,</group>
+  </rule>
+
+  <!-- 5) Connexion root hors heures ouvrables (heure du SERVEUR Wazuh) -->
+  <rule id="100560" level="10">
+    <if_sid>5501</if_sid>
+    <user>root</user>
+    <time>18:00-08:00</time>
+    <description>Session root ouverte hors heures ouvrables</description>
+    <group>authentication_success,suspicious,</group>
+  </rule>
+
+</group>

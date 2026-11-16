@@ -1,0 +1,13 @@
+name: tests
+on:
+  push:
+  pull_request:
+jobs:
+  bundle-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Installer les outils de test
+        run: sudo apt-get update && sudo apt-get install -y yara jq shellcheck libxml2-utils
+      - name: Lancer les tests
+        run: bash tests/run_tests.sh

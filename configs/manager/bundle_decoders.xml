@@ -1,0 +1,10 @@
+<!-- Décodeur des résultats du script yara.sh (log active-responses.log de l'agent) -->
+<decoder name="yara_bundle">
+  <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_bundle_scan">
+  <parent>yara_bundle</parent>
+  <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+  <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>

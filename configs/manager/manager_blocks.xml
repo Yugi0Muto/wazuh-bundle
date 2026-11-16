@@ -1,0 +1,26 @@
+  <!-- ===== wazuh-bundle : commandes et Active Response ===== -->
+
+  <!-- YARA (Linux) : le script yara.sh est installé sur l'agent par install_agent_linux.sh (option yara) -->
+  <command>
+    <name>yara_linux</name>
+    <executable>yara.sh</executable>
+    <extra_args>-yara_path /usr/bin -yara_rules /var/ossec/etc/shared/yara_rules.yar</extra_args>
+    <timeout_allowed>no</timeout_allowed>
+  </command>
+
+  <!-- Brute force SSH : blocage local de l'IP source pendant 10 minutes
+       (la commande firewall-drop est fournie par défaut dans ossec.conf) -->
+  <active-response>
+    <command>firewall-drop</command>
+    <location>local</location>
+    <rules_id>5763</rules_id>
+    <timeout>600</timeout>
+  </active-response>
+
+  <!-- Analyse YARA des fichiers nouveaux ou modifiés (règles 100501/100502) -->
+  <active-response>
+    <disabled>no</disabled>
+    <command>yara_linux</command>
+    <location>local</location>
+    <rules_id>100501,100502</rules_id>
+  </active-response>
